@@ -61,6 +61,11 @@ public final class Constants {
         
         public static final double kPositionTolerance = 0.01;
     }
+
+    public final class TurretConstants {
+      public static final double kTurretGearing = (1/5) * (20/76);
+      public static final double kHoodGearing = (1/5) * (20/76) * (18/24);
+    }
     //TODO add CAN constants and other connections
     public static final class CANConstants{}
 
@@ -88,6 +93,15 @@ public final class Constants {
       public static final double kModuleTurnD = 0.01;
       public static final double kModuleTurnS = 1;
       public static final double kModuleTurnV = .5;
+
+
+      public static final double kTurretP = 2;
+      public static final double kTurretI = 0;
+      public static final double kTurretD = 0;
+
+      public static final double kFlywheelP = 3;
+      public static final double kFlywheelI = 0.1;
+      public static final double kFlywheelD = 0.1;
 
 
     }
