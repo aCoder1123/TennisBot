@@ -33,18 +33,22 @@ public class Turret extends SubsystemBase {
   private RelativeEncoder m_LeftFlywheelEncoder;
   private RelativeEncoder m_TurnEncoder;
   private RelativeEncoder m_HoodEncoder;
-  
+
+  // TODO LIMELIGHT
+
+  // TODO readout
+
   class TurretState {
-      public double rpm = 0;
-      public double turretRot = 0;
-      public double hoodAngle = 0;
-    }
+    public double rpm = 0;
+    public double turretRot = 0;
+    public double hoodAngle = 0;
+  }
 
   TurretState currentTurretState = new TurretState();
   TurretState desiredTurretState = new TurretState();
-  
+
   private boolean onStandBy = true;
-  
+
   public Turret() {
     currentTurretState.hoodAngle = 0;
     currentTurretState.turretRot = 0;
@@ -59,15 +63,14 @@ public class Turret extends SubsystemBase {
     m_LeftFlywheelEncoder = m_LeftFlywheelMotor.getEncoder();
     m_TurnEncoder = m_TurnMotor.getEncoder();
     m_HoodEncoder = m_HoodMotor.getEncoder();
-    
   }
 
   // public void setAsZero() {
-    
+
   // }
-  //todo empirically determine formula
+  // todo empirically determine formula
   public double velocityToRPM(double velocity) {
-    double rpm = (1 * Math.pow(velocity, 2) + 1* velocity + .1);
+    double rpm = (1 * Math.pow(velocity, 2) + 1 * velocity + .1);
     return MathUtil.clamp(rpm, -1, 1);
   }
 
@@ -79,41 +82,46 @@ public class Turret extends SubsystemBase {
     desiredTurretState = desiredPos;
     desiredTurretState.hoodAngle = MathUtil.clamp(desiredPos.hoodAngle, 22.5, 45);
     m_TurnController.setSetpoint(desiredPos.turretRot);
-    // m_HoodController.setSetpoint(desiredPos.turretRot - ((currentTurretState.hoodAngle - desiredPos.hoodAngle) * (24 / 18)));
+    // m_HoodController.setSetpoint(desiredPos.turretRot -
+    // ((currentTurretState.hoodAngle - desiredPos.hoodAngle) * (24 / 18)));
     m_LeftFlywheelController.setSetpoint(desiredTurretState.rpm);
     m_RightFlywheelController.setSetpoint(desiredTurretState.rpm);
   }
-  
+
   public TurretState getShotData(Pose2d robotPos) {
     TurretState shotData = new TurretState();
     return shotData;
   }
 
-  //TODO math
-  public void prepareShot()  {
+  // TODO math
+  public void prepareShot() {
 
   }
 
   public Object shotReady() {
-    if (m_HoodController.atSetpoint() && m_TurnController.atSetpoint() && m_RightFlywheelController.atSetpoint() && m_LeftFlywheelController.atSetpoint()) {
+    if (m_HoodController.atSetpoint() && m_TurnController.atSetpoint() && m_RightFlywheelController.atSetpoint()
+        && m_LeftFlywheelController.atSetpoint()) {
       currentTurretState = desiredTurretState;
       return desiredTurretState;
     }
     return null;
   }
 
-  //TODO implement flywheel feed forward
+  // TODO implement flywheel feed forward
   @Override
   public void periodic() {
     if (onStandBy) {
-      m_RightFlywheelMotor.set(MathUtil.clamp(m_RightFlywheelController.calculate(m_RightFlywheelEncoder.getVelocity()), -1, 1));
-      m_LeftFlywheelMotor.set(MathUtil.clamp(m_LeftFlywheelController.calculate(m_LeftFlywheelEncoder.getVelocity()), -1, 1));
+      m_RightFlywheelMotor
+          .set(MathUtil.clamp(m_RightFlywheelController.calculate(m_RightFlywheelEncoder.getVelocity()), -1, 1));
+      m_LeftFlywheelMotor
+          .set(MathUtil.clamp(m_LeftFlywheelController.calculate(m_LeftFlywheelEncoder.getVelocity()), -1, 1));
 
-      double turn = m_TurnController.calculate(m_TurnEncoder.getPosition()*360);
+      double turn = m_TurnController.calculate(m_TurnEncoder.getPosition() * 360);
       double turnError = m_TurnController.getPositionError();
       double hoodError = turnError - ((currentTurretState.hoodAngle - desiredTurretState.hoodAngle) * (24 / 18));
       m_TurnMotor.set(turn);
-      m_HoodMotor.set(m_HoodController.calculate(MathUtil.inputModulus(m_HoodEncoder.getPosition()*360, 0, 360), MathUtil.inputModulus(m_TurnEncoder.getPosition()*360, 0, 360) + hoodError));
+      m_HoodMotor.set(m_HoodController.calculate(MathUtil.inputModulus(m_HoodEncoder.getPosition() * 360, 0, 360),
+          MathUtil.inputModulus(m_TurnEncoder.getPosition() * 360, 0, 360) + hoodError));
     } else {
       m_RightFlywheelMotor.set(0);
       m_LeftFlywheelMotor.set(0);
@@ -124,6 +132,6 @@ public class Turret extends SubsystemBase {
 
   @Override
   public void simulationPeriodic() {
-  
+
   }
 }
