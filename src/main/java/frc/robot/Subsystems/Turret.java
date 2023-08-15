@@ -6,10 +6,13 @@ package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.MathUtil;
+
+import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.networktables.NetworkTableInstance;
 
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.CANSparkMax;
@@ -18,11 +21,16 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import static frc.robot.Constants.TurretConstants.*;
 import static frc.robot.Constants.PID.*;
 
+
+
 public class Turret extends SubsystemBase {
   private PIDController m_RightFlywheelController = new PIDController(kFlywheelP, kFlywheelI, kFlywheelP);
   private PIDController m_LeftFlywheelController = new PIDController(kFlywheelP, kFlywheelI, kFlywheelP);
   private PIDController m_TurnController = new PIDController(kTurretP, kTurretI, kTurretD);
   private PIDController m_HoodController = new PIDController(kTurretP, kTurretI, kTurretD);
+
+  private SimpleMotorFeedforward m_RightFlywheelFeedForward = new SimpleMotorFeedforward(kFlywheelS, kflywheelV);
+  private SimpleMotorFeedforward m_LeftFlywheelFeedForward = new SimpleMotorFeedforward(kFlywheelS, kflywheelV);
 
   private CANSparkMax m_LeftFlywheelMotor = new CANSparkMax(0, MotorType.kBrushless);
   private CANSparkMax m_RightFlywheelMotor = new CANSparkMax(0, MotorType.kBrushless);
@@ -34,9 +42,12 @@ public class Turret extends SubsystemBase {
   private RelativeEncoder m_TurnEncoder;
   private RelativeEncoder m_HoodEncoder;
 
-  // TODO LIMELIGHT
+  private NetworkTable limelightTable = NetworkTableInstance.getDefault().getTable("limelight");
 
+  // TODO ids
   // TODO readout
+
+  //! TUNE PID AND FF
 
   class TurretState {
     public double rpm = 0;
@@ -86,16 +97,41 @@ public class Turret extends SubsystemBase {
     // ((currentTurretState.hoodAngle - desiredPos.hoodAngle) * (24 / 18)));
     m_LeftFlywheelController.setSetpoint(desiredTurretState.rpm);
     m_RightFlywheelController.setSetpoint(desiredTurretState.rpm);
+    
   }
 
+  public boolean getTV() {
+    if (limelightTable.getEntry("tv").getInteger(0) == 1) {
+      return true;
+    }
+    return false;
+  }
+
+  public double getTX() {
+    return limelightTable.getEntry("tx").getDouble(0);
+  }
+
+  public double getTY() {
+    return limelightTable.getEntry("ty").getDouble(0);
+  }
+
+  public double getTA() {
+    return limelightTable.getEntry("ta").getDouble(0);
+  }
+
+  public double getTS() {
+    return limelightTable.getEntry("ts").getDouble(0);
+  }
+  
+  // TODO - MATH
   public TurretState getShotData(Pose2d robotPos) {
     TurretState shotData = new TurretState();
     return shotData;
   }
 
-  // TODO math
-  public void prepareShot() {
-
+  public void prepareShot(Pose2d robotPose2d) {
+    desiredTurretState = getShotData(robotPose2d);
+    onStandBy = true;
   }
 
   public Object shotReady() {
@@ -107,14 +143,15 @@ public class Turret extends SubsystemBase {
     return null;
   }
 
-  // TODO implement flywheel feed forward
   @Override
   public void periodic() {
     if (onStandBy) {
+      double rightFlywheel = m_RightFlywheelController.calculate(m_RightFlywheelEncoder.getVelocity()) + m_RightFlywheelFeedForward.calculate(m_RightFlywheelEncoder.getVelocity());
+      double leftFlywheel = m_LeftFlywheelController.calculate(m_LeftFlywheelEncoder.getVelocity()) + m_LeftFlywheelFeedForward.calculate(m_LeftFlywheelEncoder.getVelocity());
       m_RightFlywheelMotor
-          .set(MathUtil.clamp(m_RightFlywheelController.calculate(m_RightFlywheelEncoder.getVelocity()), -1, 1));
+          .set(MathUtil.clamp(rightFlywheel, -1, 1));
       m_LeftFlywheelMotor
-          .set(MathUtil.clamp(m_LeftFlywheelController.calculate(m_LeftFlywheelEncoder.getVelocity()), -1, 1));
+          .set(MathUtil.clamp(leftFlywheel, -1, 1));
 
       double turn = m_TurnController.calculate(m_TurnEncoder.getPosition() * 360);
       double turnError = m_TurnController.getPositionError();

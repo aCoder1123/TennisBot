@@ -69,7 +69,9 @@ public final class Constants {
   }
 
   public final class LoaderConstants {
-
+    public static final int kBallProximity = 1500;
+    public static final double kGateRPM = 300;
+    public static final double kLoaderRPM = 3000;
   }
 
   // TODO add CAN constants and other connections
@@ -105,6 +107,16 @@ public final class Constants {
     public static final double kFlywheelP = 3;
     public static final double kFlywheelI = 0.1;
     public static final double kFlywheelD = 0.1;
+    public static final double kFlywheelS = 0;
+    public static final double kflywheelV = 0.00001;
+
+    public static final double kGateP = 2;
+    public static final double kGateI = 0.1;
+    public static final double kGateD = 0;
+
+    public static final double kLoaderP = 2;
+    public static final double kLoaderI = 0.1;
+    public static final double kLoaderD = 0;
 
   }
 }
