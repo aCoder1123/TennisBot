@@ -77,6 +77,23 @@ public final class Constants {
 
   // TODO add CAN constants and other connections
   public static final class CANConstants {
+    public static final int kHoodID = 1;
+    public static final int kTurnID = 2;
+    public static final int kLeftFLywheelID = 3;
+    public static final int kRightFlywheelID = 4;
+    public static final int kLeftLoaderID = 5;
+    public static final int kRightLoaderID = 6;
+    public static final int kGateID = 7;
+    
+
+    public static final int kFrontRightDrive = 9;
+    public static final int kFrontRightTurn = 10;
+    public static final int kFrontLeftDrive = 11;
+    public static final int kFrontLeftTurn = 12;
+    public static final int kBackLeftDrive = 13;
+    public static final int kBackLeftTurn = 14;
+    public static final int kBackRightDrive = 15;
+    public static final int kBackRightTurn = 16;
   }
 
   // TODO add PID constants

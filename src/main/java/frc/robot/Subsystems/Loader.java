@@ -17,15 +17,16 @@ import com.revrobotics.ColorSensorV3;
 
 import static frc.robot.Constants.LoaderConstants.*;
 import static frc.robot.Constants.PID.*;
+import static frc.robot.Constants.CANConstants.*;
 
 public class Loader extends SubsystemBase {
     private PIDController m_GateController = new PIDController(kGateP, kGateI, kGateP);
     private PIDController m_LeftLoaderController = new PIDController(kLoaderP, kLoaderI, kLoaderD);
     private PIDController m_RightLoaderController = new PIDController(kLoaderP, kLoaderI, kLoaderD);
 
-    private CANSparkMax m_GateMotor = new CANSparkMax(0, MotorType.kBrushless);
-    private CANSparkMax m_LeftLoaderMotor = new CANSparkMax(0, MotorType.kBrushless);
-    private CANSparkMax m_RightLoaderMotor = new CANSparkMax(0, MotorType.kBrushless);
+    private CANSparkMax m_GateMotor = new CANSparkMax(kGateID, MotorType.kBrushless);
+    private CANSparkMax m_LeftLoaderMotor = new CANSparkMax(kLeftLoaderID, MotorType.kBrushless);
+    private CANSparkMax m_RightLoaderMotor = new CANSparkMax(kRightLoaderID, MotorType.kBrushless);
 
     private RelativeEncoder m_GateEncoder;
     private RelativeEncoder m_LeftLoaderEncoder;

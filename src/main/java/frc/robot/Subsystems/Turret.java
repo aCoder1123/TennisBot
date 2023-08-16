@@ -25,6 +25,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableBuilderImpl;
 
 import static frc.robot.Constants.TurretConstants.*;
 import static frc.robot.Constants.PID.*;
+import static frc.robot.Constants.CANConstants.*;
+
 
 
 
@@ -37,10 +39,10 @@ public class Turret extends SubsystemBase {
   private SimpleMotorFeedforward m_RightFlywheelFeedForward = new SimpleMotorFeedforward(kFlywheelS, kflywheelV);
   private SimpleMotorFeedforward m_LeftFlywheelFeedForward = new SimpleMotorFeedforward(kFlywheelS, kflywheelV);
 
-  private CANSparkMax m_LeftFlywheelMotor = new CANSparkMax(0, MotorType.kBrushless);
-  private CANSparkMax m_RightFlywheelMotor = new CANSparkMax(0, MotorType.kBrushless);
-  private CANSparkMax m_TurnMotor = new CANSparkMax(0, MotorType.kBrushless);
-  private CANSparkMax m_HoodMotor = new CANSparkMax(0, MotorType.kBrushless);
+  private CANSparkMax m_LeftFlywheelMotor = new CANSparkMax(kLeftFLywheelID, MotorType.kBrushless);
+  private CANSparkMax m_RightFlywheelMotor = new CANSparkMax(kRightFlywheelID, MotorType.kBrushless);
+  private CANSparkMax m_TurnMotor = new CANSparkMax(kTurnID, MotorType.kBrushless);
+  private CANSparkMax m_HoodMotor = new CANSparkMax(kHoodID, MotorType.kBrushless);
 
   private RelativeEncoder m_RightFlywheelEncoder;
   private RelativeEncoder m_LeftFlywheelEncoder;
