@@ -66,6 +66,7 @@ public final class Constants {
   public final class TurretConstants {
     public static final double kTurretGearing = (1 / 5) * (20 / 76);
     public static final double kHoodGearing = (1 / 5) * (20 / 76) * (18 / 24);
+    public static final double kSearchRPM = 250; // about (3600 / (.05 * (360/60))) / 50 or fiftyish times minimum∏
   }
 
   public final class LoaderConstants {

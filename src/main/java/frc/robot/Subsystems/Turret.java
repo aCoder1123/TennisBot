@@ -18,6 +18,11 @@ import com.revrobotics.RelativeEncoder;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
+import edu.wpi.first.util.sendable.Sendable;
+import edu.wpi.first.util.sendable.SendableBuilder;
+import edu.wpi.first.util.sendable.SendableRegistry;
+import edu.wpi.first.wpilibj.smartdashboard.SendableBuilderImpl;
+
 import static frc.robot.Constants.TurretConstants.*;
 import static frc.robot.Constants.PID.*;
 
@@ -59,6 +64,7 @@ public class Turret extends SubsystemBase {
   TurretState desiredTurretState = new TurretState();
 
   private boolean onStandBy = true;
+  private boolean search = true;
 
   public Turret() {
     currentTurretState.hoodAngle = 0;
@@ -134,17 +140,60 @@ public class Turret extends SubsystemBase {
     onStandBy = true;
   }
 
-  public Object shotReady() {
+  public boolean shotReady() {
     if (m_HoodController.atSetpoint() && m_TurnController.atSetpoint() && m_RightFlywheelController.atSetpoint()
-        && m_LeftFlywheelController.atSetpoint()) {
+        && m_LeftFlywheelController.atSetpoint() && getTV()) {
       currentTurretState = desiredTurretState;
-      return desiredTurretState;
+      return true;
     }
-    return null;
+    return false;
   }
 
+  public boolean getSearch() {
+    return this.search;
+  }
+
+  public void setSearch(boolean mode) {
+    this.search = mode;
+  }
+
+  public boolean getStandby() {
+    return this.onStandBy;
+  }
+
+  public void setStandBy(boolean val) {
+    this.onStandBy = val;
+  }
+
+  public double getRPM() {
+    return this.desiredTurretState.rpm;
+  }
+
+  public double getRotation() {
+    return this.desiredTurretState.turretRot;
+  }
+
+  public double getAngle() {
+    return this.desiredTurretState.hoodAngle;
+  }
+
+  public void startReadout() {
+    SendableBuilderImpl m_builder = new SendableBuilderImpl();
+    m_builder.setSmartDashboardType("Turret");
+    m_builder.addBooleanProperty("Standby", this::getStandby, this::setStandBy);
+    m_builder.addBooleanProperty("Search", this::getSearch, this::setSearch);
+    m_builder.addDoubleProperty("RPM", this::getRPM, null);
+    m_builder.addDoubleProperty("Rotation", this::getRotation, null);
+    m_builder.addDoubleProperty("Angle", this::getAngle, null);
+
+    m_builder.close();
+  }
+
+
+  //TODO implement search
   @Override
   public void periodic() {
+    
     if (onStandBy) {
       double rightFlywheel = m_RightFlywheelController.calculate(m_RightFlywheelEncoder.getVelocity()) + m_RightFlywheelFeedForward.calculate(m_RightFlywheelEncoder.getVelocity());
       double leftFlywheel = m_LeftFlywheelController.calculate(m_LeftFlywheelEncoder.getVelocity()) + m_LeftFlywheelFeedForward.calculate(m_LeftFlywheelEncoder.getVelocity());
@@ -164,6 +213,7 @@ public class Turret extends SubsystemBase {
       m_LeftFlywheelMotor.set(0);
       m_TurnMotor.set(0);
       m_HoodMotor.set(0);
+
     }
   }
 

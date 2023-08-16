@@ -60,6 +60,13 @@ public class Loader extends SubsystemBase {
             onStandBy = true;
         }
     }
+
+    public boolean isReady(){
+        if (onStandBy && m_LeftLoaderController.atSetpoint() && m_RightLoaderController.atSetpoint()) {
+            return true;
+        } 
+        return false;
+    }
     
     public boolean loadBall() {
         if (isLoaded()) {
